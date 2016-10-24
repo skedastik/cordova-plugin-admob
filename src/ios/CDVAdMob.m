@@ -730,57 +730,30 @@ return kGADAdSizeInvalid;
 
 
 - (GADRequest*) __buildAdRequest
-
 {
-
     GADRequest *request = [GADRequest request];
 
-    
-
     if (self.isTesting) {
+        // support test ads in iOS simulator
+        NSArray *baseTestDevices = @[kGADSimulatorID];
 
-// Make the request for a test ad. Put in an identifier for the simulator as
+        // import comma-separated test devices IDs from config.xml preference with name="AdMobTestDeviceIDs"
+        id testDevicePref = [self.commandDelegate.settings objectForKey:[@"AdMobTestDeviceIDs" lowercaseString]];
+        NSArray *testDevices = [testDevicePref componentsSeparatedByString:@","];
+        request.testDevices = [baseTestDevices arrayByAddingObjectsFromArray:testDevices];
+    }
 
-// well as any devices you want to receive test ads.
-
-request.testDevices =
-
-[NSArray arrayWithObjects:
-
-         kGADSimulatorID,
-
-         @"1d56890d176931716929d5a347d8a206",
-
-         // TODO: Add your device test identifiers here. They are
-
-         // printed to the console when the app is launched.
-
-         nil];
-
-}
-
-if (self.adExtras) {
-
-GADExtras *extras = [[GADExtras alloc] init];
-
-NSMutableDictionary *modifiedExtrasDict =
-
-[[NSMutableDictionary alloc] initWithDictionary:self.adExtras];
-
-[modifiedExtrasDict removeObjectForKey:@"cordova"];
-
-[modifiedExtrasDict setValue:@"1" forKey:@"cordova"];
-
-extras.additionalParameters = modifiedExtrasDict;
-
-[request registerAdNetworkExtras:extras];
-
-}
-
-    
+    if (self.adExtras) {
+        GADExtras *extras = [[GADExtras alloc] init];
+        NSMutableDictionary *modifiedExtrasDict =
+        [[NSMutableDictionary alloc] initWithDictionary:self.adExtras];
+        [modifiedExtrasDict removeObjectForKey:@"cordova"];
+        [modifiedExtrasDict setValue:@"1" forKey:@"cordova"];
+        extras.additionalParameters = modifiedExtrasDict;
+        [request registerAdNetworkExtras:extras];
+    }
 
     return request;
-
 }
 
 
