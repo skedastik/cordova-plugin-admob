@@ -83,6 +83,12 @@
 
 
 
+@property (assign) long gender;
+
+@property (assign) int birthYear;
+
+
+
 - (void) setOptions:(CDVInvokedUrlCommand *)command;
 
 
